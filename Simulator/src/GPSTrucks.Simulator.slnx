@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="GPSTrucks.Simulator.API/GPSTrucks.Simulator.API.csproj" />
+  <Project Path="GPSTrucks.Simulator.Application/GPSTrucks.Simulator.Application.csproj" />
+  <Project Path="GPSTrucks.Simulator.Infrastructure/GPSTrucks.Simulator.Infrastructure.csproj" />
+</Solution>

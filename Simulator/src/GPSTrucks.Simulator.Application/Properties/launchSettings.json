@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "GPSTrucks.Simulator.Application": {
+      "commandName": "Project"
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  }
+}

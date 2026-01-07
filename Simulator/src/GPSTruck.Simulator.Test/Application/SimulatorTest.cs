@@ -1,14 +1,17 @@
 ﻿using GPSTrucks.Simulator.Application.Models;
+using GPSTrucks.Simulator.Application.Repositories;
 using GPSTrucks.Simulator.Application.Services;
 using GPSTrucks.Simulator.Core;
 using GPSTrucks.Simulator.Core.Entities;
 using NSubstitute;
 using Shouldly;
+using System.Net;
 
 namespace GPSTrucks.Simulator.Test.Application
 {
     public class SimulatorTest
     {
+        private IRequestLoggerRepository loggerRepository = Substitute.For<IRequestLoggerRepository>();
 
         private static ITruck GetTruckMock()
         {
@@ -20,12 +23,12 @@ namespace GPSTrucks.Simulator.Test.Application
             return mockTruck;
         }
 
-        private static IGPSDataPublisher GetGPSDataPublisherMock()
+        private static IGPSDataPublisherRepository GetGPSDataPublisherMock()
         {
-            var mockPublisher = Substitute.For<IGPSDataPublisher>();
+            var mockPublisher = Substitute.For<IGPSDataPublisherRepository>();
             mockPublisher
                 .PublishAsync(Arg.Any<GPSPayload>())
-                .Returns(Task.CompletedTask);
+                .Returns(Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK)));
             return mockPublisher;
         }
 
@@ -38,7 +41,7 @@ namespace GPSTrucks.Simulator.Test.Application
 
             var trucks = Enumerable.Range(0, truckCount).Select(_ => GetTruckMock()).ToList();
 
-            var simulator = new SimulatorService(gpsDataPublisher, new SimulatorSettings { TickIntervalMs = 5 });
+            var simulator = new SimulatorService(gpsDataPublisher, loggerRepository, new SimulatorSettings { TickIntervalMs = 5 });
 
             foreach(var truck in trucks)
             {
@@ -86,7 +89,7 @@ namespace GPSTrucks.Simulator.Test.Application
             var t2 = GetTruckMock();
             var t3 = GetTruckMock();
 
-            var simulator = new SimulatorService(gpsDataPublisher, new SimulatorSettings { TickIntervalMs = 5 });
+            var simulator = new SimulatorService(gpsDataPublisher, loggerRepository, new SimulatorSettings { TickIntervalMs = 5 });
 
             simulator.GetTrucks().Count().ShouldBe(0);
 

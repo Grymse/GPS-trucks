@@ -1,10 +1,12 @@
 ﻿using GPSTrucks.Simulator.Application.Models;
+using GPSTrucks.Simulator.Application.Repositories;
 using GPSTrucks.Simulator.Core;
 using GPSTrucks.Simulator.Core.Entities;
+using System.Net;
 
 namespace GPSTrucks.Simulator.Application.Services
 {
-    public class SimulatorService(IGPSDataPublisher dataPublisher, SimulatorSettings settings) : ISimulatorService
+    public class SimulatorService(IGPSDataPublisherRepository dataPublisher, IRequestLoggerRepository loggerRepository, SimulatorSettings settings) : ISimulatorService
     {
         private readonly Queue<(DateTime nextUpdate, ITruck truck)> _trucks = [];
         private readonly TimeSpan _UPDATE_INTERVAL = TimeSpan.FromMilliseconds(settings.TickIntervalMs);
@@ -30,10 +32,23 @@ namespace GPSTrucks.Simulator.Application.Services
             return (nextUpdate, truck);
         }
 
-        private void SendTruckPayload(GPSPayload payload)
+        private async void SendTruckPayload(GPSPayload payload)
         {
-            dataPublisher.PublishAsync(payload);
-            // TODO: Send status-codes or failed requests to logging system
+            try
+            {
+                var result = await dataPublisher.PublishAsync(payload);
+                loggerRepository.Log(payload.TruckId, result.StatusCode);
+            }
+            catch (HttpRequestException ex)
+            {
+                if (ex.StatusCode.HasValue)
+                    loggerRepository.Log(payload.TruckId, ex.StatusCode.Value);
+                else throw;
+            }
+            catch (TimeoutException)
+            {
+                loggerRepository.Log(payload.TruckId, HttpStatusCode.RequestTimeout);
+            }
         }
 
         public ITruck? GetTruck(string id)

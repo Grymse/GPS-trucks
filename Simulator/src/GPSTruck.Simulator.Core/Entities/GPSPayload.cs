@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GPSTrucks.Simulator.Application.Models
+﻿
+namespace GPSTrucks.Simulator.Core.Entities
 {
     public record GPSPayload
     {
@@ -15,5 +12,17 @@ namespace GPSTrucks.Simulator.Application.Models
         public required Location Location { get; init; }
         public required DateTime Timestamp { get; init; }
         public required TruckStatus Status { get; init; }
+
+        public static GPSPayload Empty => new GPSPayload
+        {
+            TruckId = string.Empty,
+            SpeedKmH = 0,
+            FuelLevelPct = 0,
+            FuelLevelLiters = 0,
+            EngineTempC = 0,
+            Location = Location.Zero,
+            Timestamp = DateTime.MinValue,
+            Status = TruckStatus.Stopped
+        };
     }
 }

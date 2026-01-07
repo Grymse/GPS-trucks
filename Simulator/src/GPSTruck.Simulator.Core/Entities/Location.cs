@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace GPSTrucks.Simulator.Application.Models
+﻿
+namespace GPSTrucks.Simulator.Core.Entities
 {
     public class Location
     {
         private const double EarthRadiusKm = 6371.0;
         public float Latitude { get; set; }
         public float Longitude { get; set; }
+
+        public static Location Zero => new Location(0.0f, 0.0f);
         public Location(float latitude, float longitude)
         {
             Latitude = latitude;
@@ -78,7 +77,7 @@ namespace GPSTrucks.Simulator.Application.Models
         {
             if (obj is Location other)
             {
-                return Latitude == other.Latitude && Longitude == other.Longitude;
+                return Latitude.Equals(other.Latitude) && Longitude.Equals(other.Longitude);
             }
             return false;
         }

@@ -1,13 +1,15 @@
 ﻿using GPSTrucks.Simulator.Application.Models;
+using GPSTrucks.Simulator.Core;
+using GPSTrucks.Simulator.Core.Entities;
 
-namespace GPSTrucks.Simulator.Application
+namespace GPSTrucks.Simulator.Application.Services
 {
-    public class Simulator
+    public class SimulatorService(IGPSDataPublisher dataPublisher, SimulatorSettings settings) : ISimulatorService
     {
-        private readonly Queue<(DateTime nextUpdate, Truck truck)> _trucks = [];
-        private readonly TimeSpan _UPDATE_INTERVAL = TimeSpan.FromSeconds(5);
+        private readonly Queue<(DateTime nextUpdate, ITruck truck)> _trucks = [];
+        private readonly TimeSpan _UPDATE_INTERVAL = TimeSpan.FromMilliseconds(settings.TickIntervalMs);
 
-        public void Loop()
+        public void RunTick()
         {
             if (_trucks.Count == 0) return;
 
@@ -19,20 +21,22 @@ namespace GPSTrucks.Simulator.Application
             }
         }
 
-        private (DateTime nextUpdate, Truck truck) AdvanceTruck(DateTime currentUpdateTime, Truck truck)
+        private (DateTime nextUpdate, ITruck truck) AdvanceTruck(DateTime currentUpdateTime, ITruck truck)
         {
-            var nextUpdate = currentUpdateTime.Add(_UPDATE_INTERVAL);
-            var payload = truck.Advance();
+            var payload = truck.Advance(currentUpdateTime);
             SendTruckPayload(payload);
+
+            var nextUpdate = currentUpdateTime.Add(_UPDATE_INTERVAL);
             return (nextUpdate, truck);
         }
 
         private void SendTruckPayload(GPSPayload payload)
         {
-            // TODO: Implement sending GPS payload to the server or processing it as needed
+            dataPublisher.PublishAsync(payload);
+            // TODO: Send status-codes or failed requests to logging system
         }
 
-        public Truck? GetTruck(string id)
+        public ITruck? GetTruck(string id)
         {
             foreach (var truck in _trucks)
             {
@@ -44,12 +48,12 @@ namespace GPSTrucks.Simulator.Application
             return null;
         }
 
-        public IEnumerable<Truck> GetTrucks()
+        public IEnumerable<ITruck> GetTrucks()
         {
             return _trucks.Select(t => t.truck);
         }
 
-        public void AddTruck(Truck truck)
+        public void AddTruck(ITruck truck)
         {
             var payload = truck.GetGPSPayload();
             SendTruckPayload(payload);

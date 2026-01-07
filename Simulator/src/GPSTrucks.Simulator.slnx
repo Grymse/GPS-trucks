@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="GPSTruck.Simulator.Core/GPSTrucks.Simulator.Core.csproj" Id="42d4bc3a-74e0-4eb2-8e14-91c6f54fb807" />
+  <Project Path="GPSTruck.Simulator.Test/GPSTrucks.Simulator.Test.csproj" Id="3b083283-80a8-4911-b287-bff283c39fe0" />
   <Project Path="GPSTrucks.Simulator.API/GPSTrucks.Simulator.API.csproj" />
   <Project Path="GPSTrucks.Simulator.Application/GPSTrucks.Simulator.Application.csproj" />
   <Project Path="GPSTrucks.Simulator.Infrastructure/GPSTrucks.Simulator.Infrastructure.csproj" />

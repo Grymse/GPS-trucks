@@ -4,10 +4,8 @@ using System.Text;
 
 namespace GPSTrucks.Simulator.Application.Models
 {
-    public enum TruckStatus
+    public record SimulatorSettings
     {
-        Moving,
-        Stopped,
-        Refueling
+        public required int TickIntervalMs { get; init; }
     }
 }

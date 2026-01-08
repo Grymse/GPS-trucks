@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace GPSTrucks.Simulator.Application.Services
+namespace GPSTrucks.Simulator.Application.Factory
 {
     public interface ITruckFactory
     {
